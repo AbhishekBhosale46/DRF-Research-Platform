@@ -40,5 +40,79 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+    def __str__(self):
+        return self.email
+
+
+class Domain(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Skill(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Opportunity_Type(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+    
+class User_Profile(models.Model):
+    ROLE_CHOICES = [
+        ("S", "Student"),
+        ("P", "Professor"),
+        ("O", "Other"),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=1, choices=ROLE_CHOICES)
+    about = models.TextField()
+    contact_no = models.IntegerField(blank=True)
+    contact_email = models.EmailField()
+    domains = models.ManyToManyField(Domain)
+    skills = models.ManyToManyField(Skill)
+
+    def __str__(self):
+        return self.user.email
+
+
+class Opportunity(models.Model):
+    title = models.TextField()
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    opportunity_type = models.ForeignKey(Opportunity_Type, on_delete=models.SET_NULL, null=True)
+    domains = models.ManyToManyField(Domain)
+    skills = models.ManyToManyField(Skill)
+
+    def __str__(self):
+        return self.title
+
+
+class Application(models.Model):
+    STATUS_CHOICES = [
+        ("P", "Pending"),
+        ("A", "Accepted"),
+        ("R", "Rejected"),
+    ]
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default="P")
+    created_at = models.DateTimeField(auto_now_add=True)
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE)
+    opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.id} {self.applicant} {self.opportunity}"
+
+
+
     
 
