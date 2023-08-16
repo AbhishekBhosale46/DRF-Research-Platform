@@ -36,3 +36,9 @@ class UserAdmin(BaseUserAdmin):
     )
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Domain)
+admin.site.register(models.Skill)
+admin.site.register(models.Opportunity_Type)
+admin.site.register(models.Opportunity)
+admin.site.register(models.Application)
+admin.site.register(models.User_Profile)
