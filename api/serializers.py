@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Opportunity, Opportunity_Type, Domain, Skill, User_Profile
+from core.models import Opportunity, Opportunity_Type, Domain, Skill, User_Profile, Application
 
 
 class DomainSerializer(serializers.ModelSerializer):
@@ -86,3 +86,9 @@ class OpportunitySerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
+
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = '__all__'

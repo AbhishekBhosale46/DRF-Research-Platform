@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from core.models import Opportunity, Opportunity_Type, Domain, Skill, User_Profile, Application
-from .serializers import OpportunitySerializer, OpportunityTypeSerializer,SkillSerializer, DomainSerializer
+from .serializers import OpportunitySerializer, OpportunityTypeSerializer,SkillSerializer, DomainSerializer, ApplicationSerializer
 
 
 """ CRUD endpoint for user's opportunity """
@@ -53,3 +53,13 @@ def WithdrawApplication(request, app_id):
         return Response({"detail": "Application withdrawn successfully"}, status=status.HTTP_200_OK)
     except Application.DoesNotExist:
         return Response({"detail": "You have not applied to this opportunity"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+""" Endpoint to list user's applications """
+class ApplicationList(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        return queryset.filter(applicant=self.request.user)
