@@ -76,3 +76,24 @@ def  GetApplications(request, opp_id):
     applications = Application.objects.filter(opportunity=user_opportunity)
     serializer = ApplicationSerializer(applications, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+""" Endpoint to process the application """
+@api_view(['POST'])
+def ProcessApplication(request, app_id, action):
+    user = request.user
+    try:
+        application = Application.objects.get(opportunity__owner=user, id=app_id)
+    except Application.DoesNotExist:
+        return Response({"detail": "Application not found or not associated with your opportunity"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if action=='accept':
+        application.status = 'A'
+    elif action=='reject':
+        application.status = 'R'
+    else:
+        return Response({"detail": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+
+    application.save()
+    serializer = ApplicationSerializer(application)
+    return Response(serializer.data, status=status.HTTP_200_OK)
