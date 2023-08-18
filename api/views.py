@@ -55,7 +55,7 @@ def WithdrawApplication(request, app_id):
         return Response({"detail": "You have not applied to this opportunity"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-""" Endpoint to list user's applications """
+""" Endpoint to list applications created by user"""
 class ApplicationList(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
@@ -63,3 +63,16 @@ class ApplicationList(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     def get_queryset(self):
         queryset = self.queryset
         return queryset.filter(applicant=self.request.user)
+
+
+""" Endpoint to list applications of the opportunity created by user """
+@api_view(['GET'])
+def  GetApplications(request, opp_id):
+    user = request.user
+    try:
+        user_opportunity = Opportunity.objects.get(owner=user, id=opp_id)
+    except ObjectDoesNotExist:
+        return  Response({"detail": "Opportunity not found or not owned by the user"}, status=status.HTTP_404_NOT_FOUND)
+    applications = Application.objects.filter(opportunity=user_opportunity)
+    serializer = ApplicationSerializer(applications, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
