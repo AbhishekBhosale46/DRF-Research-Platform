@@ -89,6 +89,11 @@ class OpportunitySerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField('get_status', read_only=True)
+    
     class Meta:
         model = Application
         fields = '__all__'
+
+    def get_status(self, app_obj):
+        return app_obj.get_status_display()
