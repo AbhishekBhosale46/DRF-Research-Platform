@@ -31,8 +31,8 @@ class OpportunitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Opportunity
-        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'created_at', 'created_by', 'opportunity_type_id', 'opportunity_type','domains', 'skills']
-        read_only_fields = ['id', 'created_by', 'opportunity_type']
+        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'duration','created_at', 'created_by', 'opportunity_type_id', 'opportunity_type','domains', 'skills']
+        read_only_fields = ['id', 'created_by', 'opportunity_type', 'duration']
 
     def get_created_by(self, opportunity_obj):
         return opportunity_obj.owner.name
@@ -90,6 +90,7 @@ class OpportunitySerializer(serializers.ModelSerializer):
 
 class ApplicationSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField('get_status', read_only=True)
+    opportunity_title = serializers.SerializerMethodField('get_opportunity_title', read_only=True)
     
     class Meta:
         model = Application
@@ -97,3 +98,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     def get_status(self, app_obj):
         return app_obj.get_status_display()
+
+    def get_opportunity_title(self, app_obj):
+        return app_obj.opportunity.title

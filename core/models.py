@@ -88,6 +88,7 @@ class Opportunity(models.Model):
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
+    duration = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     opportunity_type = models.ForeignKey(Opportunity_Type, on_delete=models.SET_NULL, null=True)
@@ -96,6 +97,13 @@ class Opportunity(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if self.start_date and self.end_date:
+            self.duration = (self.end_date-self.start_date).days
+        else:
+            self.duration = None
+        super().save(*args, **kwargs)
 
 
 class Application(models.Model):
