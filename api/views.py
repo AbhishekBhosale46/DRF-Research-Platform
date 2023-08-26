@@ -112,10 +112,10 @@ def ProcessApplication(request, app_id, action):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-""" Endpoint to list opportunity type """
-class OpportunityTypeList(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Opportunity_Type.objects.all()
-    serializer_class = OpportunityTypeSerializer
+# """ Endpoint to list opportunity type """
+# class OpportunityTypeList(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     queryset = Opportunity_Type.objects.all()
+#     serializer_class = OpportunityTypeSerializer
 
 
 """ Endpoint to list domains """

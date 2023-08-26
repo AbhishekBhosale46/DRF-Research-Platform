@@ -25,29 +25,29 @@ class OpportunityTypeSerializer(serializers.ModelSerializer):
 class OpportunitySerializer(serializers.ModelSerializer):
     domains = DomainSerializer(many=True)
     skills = SkillSerializer(many=True)
-    opportunity_type_id = serializers.IntegerField(write_only=True)
+    # opportunity_type_id = serializers.IntegerField(write_only=True)
     created_by = serializers.SerializerMethodField('get_created_by', read_only=True)
-    opportunity_type = serializers.SerializerMethodField('get_opportunity_type', read_only=True)
+    #opportunity_type = serializers.SerializerMethodField('get_opportunity_type', read_only=True)
 
     class Meta:
         model = Opportunity
-        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'duration','created_at', 'created_by', 'opportunity_type_id', 'opportunity_type','domains', 'skills']
-        read_only_fields = ['id', 'created_by', 'opportunity_type', 'duration']
+        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'duration','created_at', 'created_by','domains', 'skills']
+        read_only_fields = ['id', 'created_by', 'duration']
 
     def get_created_by(self, opportunity_obj):
         return opportunity_obj.owner.name
 
-    def get_opportunity_type(self, opportunity_obj):
-        return opportunity_obj.opportunity_type.name
+    # def get_opportunity_type(self, opportunity_obj):
+    #     return opportunity_obj.opportunity_type.name
 
     def create(self, validated_data):
         domains_data = validated_data.pop('domains')
         skills_data = validated_data.pop('skills')
-        opportunity_type_id = validated_data.pop('opportunity_type_id')
+        # opportunity_type_id = validated_data.pop('opportunity_type_id')
 
-        opportunity_type = Opportunity_Type.objects.get(id=opportunity_type_id)
+        # opportunity_type = Opportunity_Type.objects.get(id=opportunity_type_id)
         opportunity = Opportunity.objects.create(**validated_data)
-        opportunity.opportunity_type = opportunity_type
+        # opportunity.opportunity_type = opportunity_type
 
         for single_domain_data in domains_data:
             domain = Domain.objects.get_or_create(**single_domain_data)[0]
@@ -64,7 +64,7 @@ class OpportunitySerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         domains_data = validated_data.pop('domains', None)
         skills_data = validated_data.pop('skills', None)
-        opportunity_type_id = validated_data.pop('opportunity_type_id', None)
+        # opportunity_type_id = validated_data.pop('opportunity_type_id', None)
 
         instance = super().update(instance, validated_data)
 
@@ -80,10 +80,10 @@ class OpportunitySerializer(serializers.ModelSerializer):
                 skill = Skill.objects.get_or_create(**single_skill_data)[0]
                 instance.skills.add(skill)
 
-        if opportunity_type_id is not None:
-            opportunity_type = Opportunity_Type.objects.get(id=opportunity_type_id)
-            instance.opportunity_type = opportunity_type
-            instance.save()
+        # if opportunity_type_id is not None:
+        #     opportunity_type = Opportunity_Type.objects.get(id=opportunity_type_id)
+        #     instance.opportunity_type = opportunity_type
+        #     instance.save()
 
         return instance
 
