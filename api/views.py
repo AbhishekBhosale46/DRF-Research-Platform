@@ -43,7 +43,7 @@ class OpportunityList(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
 
 
 """ Apply to opportunity """
-@api_view(['GET'])
+@api_view(['POST'])
 def ApplyOpportunity(request, opp_id):
     user = request.user
     opportunity = get_object_or_404(Opportunity, id=opp_id)
@@ -56,7 +56,7 @@ def ApplyOpportunity(request, opp_id):
 
 
 """ Withdraw application - some changes required """
-@api_view(['GET'])
+@api_view(['POST'])
 def WithdrawApplication(request, app_id):
     # first check if application exists with given id, then check if request.user and applicant are same and then do rest
     user = request.user
@@ -110,3 +110,21 @@ def ProcessApplication(request, app_id, action):
     application.save()
     serializer = ApplicationSerializer(application)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+""" Endpoint to list opportunity type """
+class OpportunityTypeList(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Opportunity_Type.objects.all()
+    serializer_class = OpportunityTypeSerializer
+
+
+""" Endpoint to list domains """
+class DomainsList(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Domain.objects.all()
+    serializer_class = DomainSerializer
+
+
+""" Endpoint to list skills """
+class SkillsList(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer
