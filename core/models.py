@@ -91,7 +91,6 @@ class Opportunity(models.Model):
     duration = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    # opportunity_type = models.ForeignKey(Opportunity_Type, on_delete=models.SET_NULL, null=True)
     domains = models.ManyToManyField(Domain)
     skills = models.ManyToManyField(Skill)
 

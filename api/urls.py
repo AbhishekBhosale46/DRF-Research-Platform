@@ -6,7 +6,6 @@ router = DefaultRouter()
 router.register('opportunities/me', UserOpportunityViewSet)
 router.register('opportunities/all', OpportunityList)
 router.register('myapplications', ApplicationList)
-# router.register('opportunity-types', OpportunityTypeList)
 router.register('domains', DomainsList)
 router.register('skills', SkillsList)
 

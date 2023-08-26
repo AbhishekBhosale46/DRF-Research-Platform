@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
-from core.models import Opportunity, Opportunity_Type, Domain, Skill, User_Profile, Application
-from .serializers import OpportunitySerializer, OpportunityTypeSerializer,SkillSerializer, DomainSerializer, ApplicationSerializer
+from core.models import Opportunity, Domain, Skill, User_Profile, Application
+from .serializers import OpportunitySerializer, SkillSerializer, DomainSerializer, ApplicationSerializer
 
 
 """ CRUD endpoint for user's opportunity """
@@ -110,12 +110,6 @@ def ProcessApplication(request, app_id, action):
     application.save()
     serializer = ApplicationSerializer(application)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# """ Endpoint to list opportunity type """
-# class OpportunityTypeList(mixins.ListModelMixin, viewsets.GenericViewSet):
-#     queryset = Opportunity_Type.objects.all()
-#     serializer_class = OpportunityTypeSerializer
 
 
 """ Endpoint to list domains """
