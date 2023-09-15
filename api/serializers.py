@@ -1,5 +1,12 @@
 from rest_framework import serializers
-from core.models import Opportunity, Domain, Skill, User_Profile, Application
+from core.models import Opportunity, Domain, Skill, User_Profile, Application, User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'name']
+        read_only_fields = ['id', 'email', 'name']
 
 
 class DomainSerializer(serializers.ModelSerializer):
@@ -71,7 +78,8 @@ class OpportunitySerializer(serializers.ModelSerializer):
 class ApplicationSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField('get_status', read_only=True)
     opportunity_title = serializers.SerializerMethodField('get_opportunity_title', read_only=True)
-    
+    applicant = UserSerializer()
+
     class Meta:
         model = Application
         fields = '__all__'
