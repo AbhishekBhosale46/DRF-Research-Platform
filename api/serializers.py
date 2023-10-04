@@ -40,19 +40,25 @@ class OpportunitySerializer(serializers.ModelSerializer):
         domains_data = validated_data.pop('domains')
         skills_data = validated_data.pop('skills')
 
-        opportunity = Opportunity.objects.create(**validated_data)
+        user = self.context['request'].user
+        exisitng_profile = User_Profile.objects.filter(user=user)
 
-        for single_domain_data in domains_data:
-            domain = Domain.objects.get_or_create(**single_domain_data)[0]
-            opportunity.domains.add(domain)
+        if exisitng_profile:
+            opportunity = Opportunity.objects.create(**validated_data)
 
-        for single_skill_data in skills_data:
-            skill = Skill.objects.get_or_create(**single_skill_data)[0]
-            opportunity.skills.add(skill)
+            for single_domain_data in domains_data:
+                domain = Domain.objects.get_or_create(**single_domain_data)[0]
+                opportunity.domains.add(domain)
 
-        opportunity.save()
-    
-        return opportunity
+            for single_skill_data in skills_data:
+                skill = Skill.objects.get_or_create(**single_skill_data)[0]
+                opportunity.skills.add(skill)
+
+            opportunity.save()
+        
+            return opportunity
+        else:
+            raise serializers.ValidationError({"detail": "User profile not created"})
 
     def update(self, instance, validated_data):
         domains_data = validated_data.pop('domains', None)
@@ -101,8 +107,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'role', 'role_type','about', 'contact_no', 'contact_email', 'domains', 'skills']
         read_only_fields = ['id', 'role_type']
 
-    def get_role_type(self, app_obj):
-        return app_obj.get_role_display()
+    def get_role_type(self, obj):
+        return obj.get_role_display()
 
     def create(self, validated_data):
         domains_data = validated_data.pop('domains')

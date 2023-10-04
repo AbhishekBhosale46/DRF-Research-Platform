@@ -51,8 +51,12 @@ def ApplyOpportunity(request, opp_id):
         application = Application.objects.get(applicant=user, opportunity=opportunity)
         return Response({"detail": "You have already applied to this opportunity"}, status=status.HTTP_400_BAD_REQUEST)
     except Application.DoesNotExist:
-        application = Application.objects.create(applicant=user, opportunity=opportunity)
-        return Response({"detail": "Application created successfully"}, status=status.HTTP_200_OK)
+        user_profile = User_Profile.objects.filter(user=user)
+        if user_profile:
+            application = Application.objects.create(applicant=user, opportunity=opportunity)
+            return Response({"detail": "Application created successfully"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "User profile not created"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 """ Withdraw application - some changes required """
