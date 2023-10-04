@@ -89,3 +89,63 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     def get_opportunity_title(self, app_obj):
         return app_obj.opportunity.title
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    domains = DomainSerializer(many=True)
+    skills = SkillSerializer(many=True)
+    role_type = serializers.SerializerMethodField('get_role_type')
+
+    class Meta:
+        model = User_Profile
+        fields = ['id', 'role', 'role_type','about', 'contact_no', 'contact_email', 'domains', 'skills']
+        read_only_fields = ['id', 'role_type']
+
+    def get_role_type(self, app_obj):
+        return app_obj.get_role_display()
+
+    def create(self, validated_data):
+        domains_data = validated_data.pop('domains')
+        skills_data = validated_data.pop('skills')
+        
+        user = self.context['request'].user
+        exisitng_profile = User_Profile.objects.filter(user=user)  
+
+        if exisitng_profile:
+            raise serializers.ValidationError({"detail":"Profile for user already exists"})
+        else:
+            user_profile = User_Profile.objects.create(**validated_data)
+
+            for single_domain_data in domains_data:
+                domain = Domain.objects.get_or_create(**single_domain_data)[0]
+                user_profile.domains.add(domain)
+
+            for single_skill_data in skills_data:
+                skill = Skill.objects.get_or_create(**single_skill_data)[0]
+                user_profile.skills.add(skill)
+
+            user_profile.save()
+        
+            return user_profile
+
+    def update(self, instance, validated_data):
+        domains_data = validated_data.pop('domains', None)
+        skills_data = validated_data.pop('skills', None)
+
+        instance = super().update(instance, validated_data)
+
+        if domains_data is not None:
+            instance.domains.clear()
+            for single_domain_data in domains_data:
+                domain = Domain.objects.get_or_create(**single_domain_data)[0]
+                instance.domains.add(domain)
+
+        if skills_data is not None:
+            instance.skills.clear()
+            for single_skill_data in skills_data:
+                skill = Skill.objects.get_or_create(**single_skill_data)[0]
+                instance.skills.add(skill)
+
+        return instance
+
+
