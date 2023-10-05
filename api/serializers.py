@@ -27,44 +27,77 @@ class OpportunitySerializer(serializers.ModelSerializer):
     domains = DomainSerializer(many=True)
     skills = SkillSerializer(many=True)
     created_by = serializers.SerializerMethodField('get_created_by', read_only=True)
+    created_by_id = serializers.SerializerMethodField('get_created_by_id', read_only=True)
 
     class Meta:
         model = Opportunity
-        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'duration','created_at', 'created_by','domains', 'skills']
-        read_only_fields = ['id', 'created_by', 'duration']
+        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'duration','created_at', 'created_by', 'created_by_id','domains', 'skills']
+        read_only_fields = ['id', 'created_by', 'created_by_id', 'duration']
 
     def get_created_by(self, opportunity_obj):
         return opportunity_obj.owner.name
 
+    def get_created_by_id(self, opportunity_obj):
+        return opportunity_obj.owner.id
+
     def create(self, validated_data):
         domains_data = validated_data.pop('domains')
         skills_data = validated_data.pop('skills')
+        start_date = validated_data.pop('start_date')
+        end_date = validated_data.pop('end_date')
 
         user = self.context['request'].user
         exisitng_profile = User_Profile.objects.filter(user=user)
 
         if exisitng_profile:
-            opportunity = Opportunity.objects.create(**validated_data)
 
-            for single_domain_data in domains_data:
-                domain = Domain.objects.get_or_create(**single_domain_data)[0]
-                opportunity.domains.add(domain)
+            if end_date>start_date:
+                opportunity = Opportunity.objects.create(**validated_data, start_date=start_date, end_date=end_date)
 
-            for single_skill_data in skills_data:
-                skill = Skill.objects.get_or_create(**single_skill_data)[0]
-                opportunity.skills.add(skill)
+                for single_domain_data in domains_data:
+                    domain = Domain.objects.get_or_create(**single_domain_data)[0]
+                    opportunity.domains.add(domain)
 
-            opportunity.save()
-        
-            return opportunity
+                for single_skill_data in skills_data:
+                    skill = Skill.objects.get_or_create(**single_skill_data)[0]
+                    opportunity.skills.add(skill)
+
+                opportunity.save()
+                return opportunity
+            else:
+                raise serializers.ValidationError({"detail": "End date must be greater than start date"})
         else:
             raise serializers.ValidationError({"detail": "User profile not created"})
 
     def update(self, instance, validated_data):
         domains_data = validated_data.pop('domains', None)
         skills_data = validated_data.pop('skills', None)
+        start_date = validated_data.pop('start_date', None)
+        end_date = validated_data.pop('end_date', None)
 
-        instance = super().update(instance, validated_data)
+        if start_date:
+            old_end_date = instance.end_date
+            if start_date < old_end_date:
+                validated_data['start_date'] = start_date
+                instance = super().update(instance, validated_data)
+            else:
+                raise serializers.ValidationError({"detail": "Start date is greater than old end date"})
+        elif end_date:
+            old_start_date = instance.start_date
+            if end_date>old_start_date:
+                validated_data['end_date'] = end_date
+                instance = super().update(instance, validated_data)
+            else:
+                raise serializers.ValidationError({"detail": "End date must be greater than old start date"})
+        elif start_date and end_date:
+            if end_date>start_date:
+                validated_data['start_date'] = start_date
+                validated_data['end_date'] = end_date
+                instance = super().update(instance, validated_data)
+            else:
+                raise serializers.ValidationError({"detail": "End date must be greater than start date"})
+        else:
+            instance = super().update(instance, validated_data)
 
         if domains_data is not None:
             instance.domains.clear()
@@ -79,7 +112,6 @@ class OpportunitySerializer(serializers.ModelSerializer):
                 instance.skills.add(skill)
 
         return instance
-
 
 class ApplicationSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField('get_status', read_only=True)
