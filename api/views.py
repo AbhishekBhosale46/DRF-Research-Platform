@@ -28,19 +28,6 @@ class OpportunityList(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
 
-    def get_queryset(self):
-        queryset = self.queryset
-        skills = self.request.query_params.getlist('skills')
-        domains = self.request.query_params.getlist('domains')
-        duration = self.request.query_params.get('duration')
-        if domains:
-            queryset = queryset.filter(domains__name__in=domains)
-        if skills:
-            queryset = queryset.filter(skills__name__in=skills)
-        if duration:
-            queryset = queryset.filter(duration__lte=duration)
-        return queryset
-
 
 """ Apply to opportunity """
 @api_view(['POST'])
