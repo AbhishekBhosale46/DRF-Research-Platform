@@ -132,15 +132,19 @@ class ApplicationSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     domains = DomainSerializer(many=True)
     skills = SkillSerializer(many=True)
-    role_type = serializers.SerializerMethodField('get_role_type')
+    # role_type = serializers.SerializerMethodField('get_role_type')
+    user_name = serializers.SerializerMethodField('get_user_name')
 
     class Meta:
         model = User_Profile
-        fields = ['id', 'role', 'role_type','about', 'contact_no', 'contact_email', 'domains', 'skills']
-        read_only_fields = ['id', 'role_type']
+        fields = ['id', 'user_name','role','about', 'contact_no', 'contact_email', 'domains', 'skills']
+        read_only_fields = ['id', 'user_name']
 
     def get_role_type(self, obj):
         return obj.get_role_display()
+
+    def get_user_name(self, obj):
+        return obj.user.name
 
     def create(self, validated_data):
         domains_data = validated_data.pop('domains')

@@ -66,13 +66,13 @@ class Opportunity_Type(models.Model):
 
     
 class User_Profile(models.Model):
-    ROLE_CHOICES = [
-        ("S", "Student"),
-        ("P", "Professor"),
-        ("O", "Other"),
-    ]
+    # ROLE_CHOICES = [
+    #     ("S", "Student"),
+    #     ("P", "Professor"),
+    #     ("O", "Other"),
+    # ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=1, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=15)
     about = models.TextField()
     contact_no = models.IntegerField(blank=True)
     contact_email = models.EmailField()
