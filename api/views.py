@@ -86,6 +86,7 @@ def  GetApplications(request, opp_id):
 @api_view(['POST'])
 def ProcessApplication(request, app_id, action):
     user = request.user
+    feedback = request.data.get('feedback', '')
     try:
         application = Application.objects.get(opportunity__owner=user, id=app_id)
     except Application.DoesNotExist:
@@ -98,6 +99,7 @@ def ProcessApplication(request, app_id, action):
     else:
         return Response({"detail": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
 
+    application.feedback = feedback
     application.save()
     serializer = ApplicationSerializer(application)
     return Response(serializer.data, status=status.HTTP_200_OK)

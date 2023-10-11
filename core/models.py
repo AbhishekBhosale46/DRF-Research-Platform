@@ -115,6 +115,7 @@ class Application(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
     opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE)
+    feedback = models.CharField(max_length=255 ,blank=True, default="")
 
     def __str__(self):
         return f"{self.id} {self.applicant} {self.opportunity}"
