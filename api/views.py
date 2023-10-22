@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
-from core.models import Opportunity, Domain, Skill, User_Profile, Application
-from .serializers import OpportunitySerializer, SkillSerializer, DomainSerializer, ApplicationSerializer, UserProfileSerializer
+from core.models import Opportunity, Domain, Skill, User_Profile, Application, Feedback
+from .serializers import OpportunitySerializer, SkillSerializer, DomainSerializer, ApplicationSerializer, UserProfileSerializer, FeedbackSerializer
 
 
 """ CRUD endpoint for user's opportunity """
@@ -139,3 +139,8 @@ def GetUserProfile(request, user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except ObjectDoesNotExist:
         return  Response({"detail": "User Profile with given id not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class FeedbackCreate(generics.CreateAPIView):
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer

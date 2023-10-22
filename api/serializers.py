@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Opportunity, Domain, Skill, User_Profile, Application, User
+from core.models import Opportunity, Domain, Skill, User_Profile, Application, User, Feedback
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -191,3 +191,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = '__all__'

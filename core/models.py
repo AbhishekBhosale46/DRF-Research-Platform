@@ -121,6 +121,12 @@ class Application(models.Model):
         return f"{self.id} {self.applicant} {self.opportunity}"
 
 
+class Feedback(models.Model):
+    email = models.EmailField()
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
 
+    def __str__(self):
+        return f"{self.email} {self.subject}"
     
 
