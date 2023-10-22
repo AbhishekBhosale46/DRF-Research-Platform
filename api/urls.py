@@ -17,5 +17,5 @@ urlpatterns = [
     path('opportunities/me/<int:opp_id>/applications', GetApplications),
     path('opportunities/me/applications/<int:app_id>/<str:action>', ProcessApplication),
     path('profile/<int:user_id>', GetUserProfile),
-    path('feedback', FeedbackCreate.as_view())
+    path('feedback/', FeedbackCreate.as_view())
 ]
