@@ -74,7 +74,7 @@ class User_Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=15)
     about = models.TextField()
-    contact_no = models.IntegerField(blank=True)
+    contact_no = models.CharField(blank=True, max_length=10)
     contact_email = models.EmailField()
     domains = models.ManyToManyField(Domain)
     skills = models.ManyToManyField(Skill)
